@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #imgWrap{
+            width:375px;
+            position:relative;
+        }
+        #imgWrap img{
+            max-width:100%
+        }
+        .desk_panel .select{
+            background:#f96a1c;
+            color:#FFF;
+        }
+        .desk_mouse_bl{
+            opacity:0.5;
+            border:1px dashed #0099FF;
+            background-color:#C3D5ED;
+            position:absolute;
+            top:0;
+            left:0;
+            width:0;
+            height:0;
+        }
+    </style>
+</head>
+<body>
+<button id="corpBtn" >生成拆分图</button>
+<div id="imgWrap" ></div>
+<canvas id="canvas" style="display:none"></canvas>
+<div id="imageList"></div>
+</body>
+<script src="js/jquery-1.12.0.min.js"></script>
+<script src="js/mArea.js"></script>
+<script>
+jQuery(function(){
+    var $imgWrap = $('#imgWrap')
+    $imgWrap.mArea(function(offset,done){
+        console.log(offset)
+        if(window.confirm('确定设置为链接')){
+            done()
+        }
+    })
+    var $corpBtn = $('#corpBtn')
+    var $imageList = $('#imageList')
+    var canvas =  document.getElementById("canvas")
+    var image = new Image()
+    image.src = './img/test.jpg'
+    image.onload = function() {
+        imageObj.isReady = true
+        console.log(this.width,this.height,'image---')
+        imageObj.width= this.width
+        imageObj.height= this.height
+        $imgWrap.append(image)
+    }
+    var isReady = false
+    var imageObj = {
+        isReady: false,
+        image:image,
+        width:0,
+        height:0
+    }
+    function getCutHeight(height) {
+        var tmp = []
+        for(var i=height,j=0;i>=0;i=i-400,j++){
+            tmp.push({
+                posi:j*400,
+                height:i>400?400:i,
+            })
+        }
+        return tmp
+    }
+
+//    var canvas =  document.createElement('canvas')
+//    document.body.appendChild(canvas)
+    $corpBtn.on('click', function () {
+        if(imageObj.isReady){
+          canvas.setAttribute('width',750)
+          canvas.setAttribute('height',400)
+          var heightArr = getCutHeight(imageObj.height)
+          heightArr.forEach(function (curr) {
+               canvas.setAttribute('width',imageObj.width)
+               canvas.setAttribute('height',curr.height)
+               var ctx = canvas.getContext('2d')
+               ctx.drawImage(image,0,-curr.posi,imageObj.width,imageObj.height)
+               var  img = new Image()
+               img.src = canvas.toDataURL('image/jpeg')
+               $imageList.append(img)
+           })
+        }
+//
+//        ctx.drawImage(image,0,0,width,height)
+//        ctx.beginPath()
+//        ctx.rect(0,0,width,200);
+//        ctx.clip()
+    })
+
+
+
+//    $imgWrap.mArea()
+})
+</script>
+</html>

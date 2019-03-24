@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+
+</body>
+<script>
+  // 继承的几种方式
+ //1、call apply
+//  function Animal (){
+//  	this.walk = '4 legs'
+//  }
+//  function Cat (name, color) {
+//  	Animal.apply(this, arguments)
+//  	this.name = name
+//    this.color = color
+//  }
+//  var cat = new Cat('mimi', 'yellow')
+//  console.log(cat.walk)
+
+  //2、 prototype
+//	  function Animal (){
+//	  	this.walk = '4 legs'
+//	  }
+//	  function Cat (name, color) {
+//	  	this.name = name
+//	    this.color = color
+//	  }
+//    Cat.prototype = new Animal()
+//	  Cat.prototype.constructor = Cat
+//    console.log('prototype -----')
+//	  var cat = new Cat('mimi', 'yellow')
+//	  console.log(cat.walk)
+
+
+  //3、 直接集成prototype
+//	function Animal (){}
+//	Animal.prototype.walk = '4 legs'
+//	function Cat (name, color) {
+//		this.name = name
+//		this.color = color
+//	}
+//	Cat.prototype = Animal.prototype
+//	Cat.prototype.constructor = Cat // 会修改Animal的prototype
+//	console.log('直接集成prototype -----')
+//	var cat = new Cat('mimi', 'yellow')
+//  console.log('Animal', Animal.prototype.constructor)
+//  console.log('cat', cat.constructor)
+//	console.log(cat.walk)
+
+  // 4、 利用空对象做媒介
+//  function F() {}
+	function Animal (){}
+	Animal.prototype.walk = '4 legs'
+//  F.prototype = Animal.prototype
+	function Cat (name, color) {
+		this.name = name
+		this.color = color
+	}
+//	Cat.prototype = new F()
+//	Cat.prototype.constructor = Cat // 不会影响修改Animal的prototype
+//	console.log('利用空对象做媒介prototype -----')
+//	var cat = new Cat('mimi', 'yellow')
+//	console.log('Animal', Animal.prototype.constructor)
+//	console.log('cat', cat.constructor)
+//	console.log(cat.walk)
+
+  // 将4方法进行封装
+    function extend(child,parent) {
+      function F() {}
+      F.prototype = parent.prototype
+      child.prototype = new F()
+      child.prototype.constructor = child
+      child._parent = parent.prototype
+    }
+  // 5、
+	function extend2(Child, Parent) {
+		var p = Parent.prototype;
+		var c = Child.prototype;
+		for (var i in p) {
+			c[i] = p[i];
+		}
+		c.uber = p;
+	}
+	extend2(Cat, Animal)
+    var cat =  new Cat ('mimi', 'yellow')
+		console.log('Animal', Animal.prototype.constructor)
+		console.log('cat', cat.constructor)
+		console.log(cat.walk)
+
+  // 实现一个浅拷贝
+  function extendCopy(p) {
+    var c = {}
+    for(var i in p) {
+    	c[i] = p[i]
+    }
+    return c
+  }
+  // 实现一个深拷贝
+  function deepCopy(p,c) {
+		var c = c || {}
+		for (var i in p ) {
+			if(typeof p[i] === 'object') {
+        c[i] = (p[i].constructor === Array)? []: {}
+        deepCopy(p[i], c[i])
+      } else {
+				c[i] = p[i]
+      }
+    }
+    return c
+  }
+
+  var a = {
+		a:1,
+    b:2,
+    c:[1,2,3,4]
+  }
+	var c = deepCopy(a)
+	console.log('a', a)
+	console.log('c', c)
+ var b = extendCopy(a)
+  b.c.push(5)
+  console.log('a', a)
+  console.log('b', b)
+
+</script>
+</html>
